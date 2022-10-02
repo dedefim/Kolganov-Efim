@@ -1,0 +1,8 @@
+Квадратная сложность"
+dict_1 = {300: "Voentorg", 200: "Gd", 600: "RGPPY"}
+list_1 = []
+for i in dict_1.keys():
+    list_1.append(i)
+sorted(list_1)
+a = max(list_1)
+print(dict_1[a], ":", a)
