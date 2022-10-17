@@ -1,0 +1,255 @@
+"""""
+Подсчитать четные и нечетные цифры введенного натурального числа.
+Например, если введено число 34560, то у него 3 четные цифры
+(4, 6 и 0) и 2 нечетные (3 и 5).
+"""""
+
+def func_1(number):
+    k = 0
+    f = 0
+    while number > 0:
+        if number % 2 == 0:
+            k += 1
+            number //= 10
+        elif number % 2 != 0:
+            f += 1
+            number //= 10
+    return f'Количество чётных чисел: {k}, Количество нечётных чисел: {f}'
+print(func_1(6558))
+
+def task2(number, k, odd):
+    if number != 0:
+        if number % 2 == 0:
+            return task2(number // 10, k + 1, odd)
+        else:
+            return task2(number // 10, k, odd + 1)
+    else:
+        print("Количество чётных чисел: ", k, "Количество нечётных чисел: ", odd)
+        return ("")
+print(task2(11116, 0, 0))
+
+"""
+Рекурсия была заменена на цикл, что уменьшило количество памяти
+При выводе использовалась F строчка.
+"""
+
+
+from memory_profiler import memory_usage
+
+
+def decor(func):
+    def wrapper(*args, **kwargs):
+        m1 = memory_usage()
+        res = func(args[0])
+        m2 = memory_usage()
+        mem_diff = m2[0] - m1[0]
+        return res, mem_diff
+
+    return wrapper
+
+
+# task_5_1
+# 1. Написать генератор нечётных чисел от 1 до n (включительно), без использования ключевого слова yield
+
+@decor  # Выполнение заняло 2.94921875 Mib
+def iterator_without_yield(n):
+    nums_gen = (i for i in range(1, n + 1) if i % 2 != 0)
+    return nums_gen
+
+
+@decor  # Выполнение заняло 1.953125 Mib
+def iterator_with_filter(lst):
+    nums_gen = filter(lambda i: i in range(0, 10000, 2), lst)
+    return nums_gen
+
+
+if __name__ == '__main__':
+    res, mem_diff = iterator_without_yield(list(range(100000)))
+    print(f"Выполнение заняло {mem_diff} Mib")
+
+    # res2, mem_diff = iterator_with_filter(list(range(100000)))
+    # print(f"Выполнение заняло {mem_diff} Mib")
+
+# В этой задаче используется оптимизацию с помощью функции filter (Способ 9), это позволило
+# значительно оптимизировать память
+
+
+import re
+
+
+pattern = r"[^a-zA-Z0-9_.]+@[a-zA-Z.]"
+def email_parse(email_address):
+    pattern = re.compile(r'^(?P<username>\w+)@(?P<domen>\w+\.\w+)$')
+    result = pattern.match(email_address)
+    if not result:
+        raise ValueError("Неверно записана почта", email_address)
+    return result.groupdict()
+
+print(email_parse('aaaaaaa@gmail.com'))
+
+
+
+
+import re
+patterns = r"[^a-zA-Z0-9_.]+@[a-zA-Z.]"
+def email_parse(email_address):
+    patterns = re.compile(r'^(?P<username>\w+)@(?P<domen>\w+\.\w+)$')
+    result = patterns.match(email_address)
+    if not result:
+        raise ValueError(f'Проверьте правильность написания электронной почты: {email_address}')
+    return result.groupdict()
+
+print(email_parse('aaaaaaa@gmail.com'))
+
+
+"""
+Замена на F строку
+"""
+
+"""
+ Приведен код, формирующий из введенного числа
+ обратное по порядку входящих в него
+ цифр и вывести на экран.
+"""
+from memory_profiler import memory_usage
+from random import randint
+
+
+def decor(func):
+    def wrapper(*args, **kwargs):
+        m1 = memory_usage()
+        res = func(args[0])
+        m2 = memory_usage()
+        mem_diff = m2[0] - m1[0]
+        return res, mem_diff
+    return wrapper
+
+
+@decor  # Выполнение заняло 0.57421875 Mib
+def mirror_1(list_of_nums):
+    return ''.join(reversed(str(list_of_nums)))
+
+
+@decor  # Выполнение заняло 0.00390625 Mib
+def mirror_2(list_of_nums):
+    for i in reversed(list_of_nums):
+        yield i
+
+
+if __name__ == '__main__':
+    my_list = [randint(0, 9) for i in range(200000)]
+    # my_generator, mem_diff = mirror_1(my_list)
+    my_generator, mem_diff = mirror_2(my_list)
+    # print(type(my_generator))
+    # for i in my_generator:
+    #     print(i)
+
+    print(f"Выполнение заняло {mem_diff} Mib")
+""""
+ оптимизацию с помощью yield
+"""
+
+
+
+from collections import namedtuple
+from statistics import mean
+
+New_Company = namedtuple('New_Company', 'name profit_list avg')
+
+lst = []
+for i in range(int(input('Введите количество компани '))):
+    arg = input('Введите в строку имя и поквартальную прибыль через пробел:\n').split()
+    lst.append(New_Company(arg[0], arg[1:], mean(map(int, arg[1:3]))))
+
+avg = mean([i.avg for i in lst])
+
+for i in lst:
+    print(f'Компания: {i.name} \t\tСредняя прибыль за год: {i.avg}')
+
+print('_' * 70, '\n')
+
+print('Компании с прибылью меньше средней:')
+for i in lst:
+    if i.avg < avg:
+        print(i.name)
+
+print('Компании с прибылью больше средней:')
+for i in lst:
+    if i.avg > avg:
+        print(i.name)
+
+
+from collections import namedtuple
+
+
+def avg_profit(data):
+    co_profit = {}
+    my_companies = namedtuple('Фирма', 'user_choice_2 q_1 q_2 q_3 q_4')
+    count = 0
+    my_list = []
+    try:
+        while count < data:
+            user_choice_2 = input(f"Введите название {count + 1} предприятия: ")
+            user_choice_3 = input("Через пробел введите прибыль данного "
+                                  "предприятия за каждый квартал "
+                                  "(Всего 4 квартала): ")
+
+            my_list.append(user_choice_3.split())
+
+            for el in my_list:
+                firm = my_companies(user_choice_2,
+                                    q_1=int(el[0]),
+                                    q_2=int(el[1]),
+                                    q_3=int(el[2]), q_4=int(el[3]))
+                co_profit[firm.user_choice_2] = (firm.q_1 + firm.q_2 +
+                                                 firm.q_3 + firm.q_4) / 4
+            count += 1
+        avg_year_profit = sum(co_profit.values()) / data
+        max_profit = [k for k, v in co_profit.items() if v > avg_year_profit]
+        min_profit = [k for k, v in co_profit.items() if v < avg_year_profit]
+        return f"Средняя годовая прибыль всех предприятий >>> " \
+               f"{avg_year_profit}K $\n" \
+               f"Предприятия, с прибылью выше среднего значения: " \
+               f"{max_profit}\n" \
+               f"Предприятия, с прибылью ниже среднего значения: " \
+               f"{min_profit}"
+    except (IndexError, ValueError) as e:
+        return f"{e} >>> input data is incorrect!"
+
+
+user_choice_1 = int(input("Введите количество предприятий "
+                          "для расчета прибыли: "))
+
+print(avg_profit(user_choice_1))
+
+"""
+Везде добавлены f строки.
+Правильно обработанно исключение.
+"""
+
+from memory_profiler import profile
+
+
+def recur(val, res):
+    if val == 0:
+        return res
+    balance = str(val % 10)
+    if balance == 0:
+        res += balance
+    else:
+        res += balance
+    return recur(val // 10, res)
+
+@profile
+def func1():
+    print(recur(10000354654654003213210, ''))
+func1()
+
+'''
+Проблема - в вызове декоратора замера времени на каждом шаге рекурсии.
+Решение - внешняя функция обертка.
+В качестве оптимизации памяти рекурсию можно заменить на цикл. 
+'''
+
+
+
