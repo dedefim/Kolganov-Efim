@@ -1,0 +1,263 @@
+from random import randint
+from timeit import timeit
+
+
+def bubble_sort_opposite(lst_obj):
+    n = 1
+    while n < len(lst_obj):
+        for i in range(len(lst_obj) - n):
+            if lst_obj[i] < lst_obj[i + 1]:
+                lst_obj[i], lst_obj[i + 1] = lst_obj[i + 1], lst_obj[i]
+        n += 1
+    return lst_obj
+
+
+orig_list = [randint(-100, 100) for _ in range(10)]
+print(orig_list[:])
+print(bubble_sort_opposite(orig_list[:]))
+
+print(
+    timeit(
+        "bubble_sort_opposite(orig_list[:])",
+        globals=globals(),
+        number=10))
+
+
+print(
+    timeit(
+        "bubble_sort_opposite(orig_list[:])",
+        globals=globals(),
+        number=100))
+
+
+print(
+    timeit(
+        "bubble_sort_opposite(orig_list[:])",
+        globals=globals(),
+        number=1000))
+
+
+
+def bubble_sort_opposite_2(lst_obj):
+    n = 1
+    while n < len(lst_obj):
+        count = 0
+        for i in range(len(lst_obj) - n):
+            if lst_obj[i] < lst_obj[i + 1]:
+                lst_obj[i], lst_obj[i + 1] = lst_obj[i + 1], lst_obj[i]
+                count += 1
+        if count == 0:
+            break
+        n += 1
+    return lst_obj
+
+
+print(orig_list[:])
+print(bubble_sort_opposite_2(orig_list[:]))
+
+# Замеры 10
+print(
+    timeit(
+        "bubble_sort_opposite_2(orig_list[:])",
+        globals=globals(),
+        number=10))
+
+
+# Замеры 1000
+
+orig_list = [randint(-100, 100) for _ in range(1000)]
+
+print(
+    timeit(
+        "bubble_sort_opposite(orig_list[:])",
+        globals=globals(),
+        number=100))
+
+print(
+    timeit(
+        "bubble_sort_opposite_2(orig_list[:])",
+        globals=globals(),
+        number=1000))
+
+"""
+Время выполнения функции без доработки - 50.11915779998526
+Время выполнения функции с доработкой - 53.64278239989653
+Дороботка поможет только в случае, если список уже сортированный 
+"""
+
+
+from random import randint
+from timeit import timeit
+import math
+
+
+m = 5
+
+random_list = [randint(-100, 100) for _ in range(2 * m + 1)]
+
+
+def median_shell_sort(array):
+    n = len(array)
+    k = int(math.log2(n))
+    interval = 2 ** k - 1
+    while interval > 0:
+        for i in range(interval, n):
+            temp = array[i]
+            j = i
+            while j >= interval and array[j - interval] > temp:
+                array[j] = array[j - interval]
+                j -= interval
+            array[j] = temp
+        k -= 1
+        interval = 2 ** k - 1
+    return f"Медианой списка {array}\n является число: {array[m]}"
+
+
+print(median_shell_sort(random_list[:]))
+
+print(
+    timeit(
+        "median_shell_sort(random_list)",
+        globals=globals(),
+        number=1000))
+
+
+m = 50
+
+random_list = [randint(-100, 100) for _ in range(2 * m + 1)]
+print(median_shell_sort(random_list[:]))
+
+print(
+    timeit(
+        "median_shell_sort(random_list)",
+        globals=globals(),
+        number=1000))
+
+
+m = 500
+
+random_list = [randint(-100, 100) for _ in range(2 * m + 1)]
+print(median_shell_sort(random_list[:]))
+
+print(
+    timeit(
+        "median_shell_sort(random_list)",
+        globals=globals(),
+        number=1000))
+
+"""
+Время выполнения:
+Массив из 10 элементов - 0.006695199990645051
+Массив из 100 элементов - 0.06743200006894767
+Массив из 1000 элементов - 1.095961500192061
+"""
+
+
+from random import randint
+from timeit import timeit
+
+m = 5
+
+random_list = [randint(-100, 100) for _ in range(2 * m + 1)]
+
+
+def func_median(some_list):
+    copy_some_list = some_list
+    for _ in range(len(some_list) // 2):
+        copy_some_list.remove(max(copy_some_list))
+    return f"Медианой списка является число: {max(copy_some_list)}"
+
+
+print(random_list)
+print(func_median(random_list))
+
+print(
+    timeit(
+        "func_median(random_list)",
+        globals=globals(),
+        number=1000))
+
+m = 50
+
+random_list = [randint(-100, 100) for _ in range(2 * m + 1)]
+print(random_list)
+print(func_median(random_list))
+
+print(
+    timeit(
+        "func_median(random_list)",
+        globals=globals(),
+        number=1000))
+
+m = 500
+
+random_list = [randint(-100, 100) for _ in range(2 * m + 1)]
+print(random_list)
+print(func_median(random_list))
+
+print(
+    timeit(
+        "func_median(random_list)",
+        globals=globals(),
+        number=1000))
+
+"""
+Время выполнения:
+Массив из 10 элементов - 0.0004962000530213118
+Массив из 100 элементов - 0.0005220999009907246
+Массив из 1000 элементов - 0.003393700113520026
+"""
+
+
+
+from random import randint
+from timeit import timeit
+from statistics import median
+
+# Замеры 10
+m = 5
+
+random_list = [randint(-100, 100) for _ in range(2 * m + 1)]
+
+
+def func_median(some_list):
+    return f"Медианой списка {some_list} является число: {median(some_list)}"
+
+
+print(func_median(random_list))
+
+print(
+    timeit(
+        "func_median(random_list)",
+        globals=globals(),
+        number=1000))
+
+# Замеры 100
+m = 50
+random_list = [randint(-100, 100) for _ in range(2 * m + 1)]
+
+print(func_median(random_list))
+print(
+    timeit(
+        "func_median(random_list)",
+        globals=globals(),
+        number=1000))
+
+# Замеры 1000
+m = 500
+random_list = [randint(-100, 100) for _ in range(2 * m + 1)]
+
+print(func_median(random_list))
+print(
+    timeit(
+        "func_median(random_list)",
+        globals=globals(),
+        number=1000))
+
+"""
+Время выполнения:
+Массив из 10 элементов - 0.001744000008329749
+Массив из 100 элементов - 0.010640599997714162
+Массив из 1000 элементов - 0.12514459993690252
+Вариант два быстрее, так как нет сортировки.
+"""
