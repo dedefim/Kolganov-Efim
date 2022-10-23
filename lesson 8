@@ -1,0 +1,228 @@
+Вы можете реализовать задачу, например,
+через ООП или предложить иной подход к решению.
+через ООП или предложить иной подход к решению.
+"""
+"""
+
+from task_1_2 import HaffmanElement, HaffmanTree
+
+class HaffmanCoding():
+    def __init__(self, str_src : str):
+        self.__str_src = str_src
+        self.__simbols_list = list()
+        self.root_element = HaffmanElement('root', 0)
+        self.__dict_haffman = dict()
+
+        self.__create_list_simbols()
+        self.__create_binary_tree()
+
+    def print_simbols_list(self):
+        st_list_simbols = str()
+        for i in self.__simbols_list:
+            st_list_simbols += f'{str(i)}, '
+        st_list_simbols = st_list_simbols[:-2]
+        print(st_list_simbols)
+
+    def view_tree(self, node):
+        # print('Haffman element:', node)
+        left_child = node.left_child
+        right_child = node.right_child
+        if not left_child is None:
+            node.left_child.bit += node.bit + '0'
+            print(f'left {node}:', node.left_child)
+            if node.left_child.simbol[:4] != 'zero':
+                self.__dict_haffman[node.left_child.simbol] = node.left_child.bit
+                # print(node.left_child.simbol)
+            self.view_tree(left_child)
+        if not right_child is None:
+            node.right_child.bit += node.bit + '1'
+            print(f'right {node}:', node.right_child)
+            if node.right_child.simbol[:4] != 'zero':
+                self.__dict_haffman[node.right_child.simbol] = node.right_child.bit
+                # print(node.right_child.simbol)
+            self.view_tree(right_child)
+
+    # Формирование словаря с уникальными символами
+    def __create_list_simbols(self):
+        simbols_set = set(self.__str_src)
+        for simbol in simbols_set:
+            self.__simbols_list.append(HaffmanElement(simbol, self.__str_src.count(simbol)))
+        self.__simbols_list.sort(key=lambda el: el.count)
+        self.print_simbols_list()
+        print('-----end __create_list_simbols-----\n')
+
+    def __create_binary_tree(self):
+        n = 1
+        while len(self.__simbols_list) > 2:
+            el_a = self.__simbols_list.pop(0)
+            el_b = self.__simbols_list.pop(0)
+            zero = HaffmanElement('zero' + str(n), el_a.count + el_b.count)
+            n += 1
+            zero.insert_left(el_a)
+            zero.insert_right(el_b)
+            # if el_a.count >= el_b.count:
+            #     zero.insert_right(el_a)
+            #     zero.insert_left(el_b)
+            # else:
+            #     zero.insert_left(el_a)
+            #     zero.insert_right(el_b)
+            for i, el in enumerate(self.__simbols_list):
+                if zero.count > el.count:
+                    continue
+                else:
+                    self.__simbols_list.insert(i, zero)
+                    break
+            else:
+                self.__simbols_list.append(zero)
+
+        el_a = self.__simbols_list[0]
+        el_b = self.__simbols_list[1]
+        if el_a.count >= el_b.count:
+            self.root_element.insert_right(el_a)
+            self.root_element.insert_left(el_b)
+        else:
+            self.root_element.insert_left(el_a)
+            self.root_element.insert_right(el_b)
+        self.view_tree(self.root_element)
+        print('-----end __create_binary_tree-----\n')
+
+    def encoding_text(self):
+        print('Словарь кодирования Хаффмана:')
+        print(self.__dict_haffman)
+        st_coding = ''
+        for el in self.__str_src:
+            st_coding += self.__dict_haffman[el]
+        print(st_coding)
+
+        st_coding_space = ''
+        for i, el in enumerate(list(st_coding)):
+            st_coding_space += el
+            if ((i+1) > 3) and (((i+1) % 4) == 0):
+                st_coding_space += ' '
+        print(st_coding_space)
+
+
+h = HaffmanCoding('beep boop beer!')
+h.encoding_text()
+print()
+
+
+"""
+Задание 2.
+Доработайте пример структуры "дерево", рассмотренный на уроке.
+Предложите варианты доработки и оптимизации
+(например, валидация значений узлов в соответствии
+ с требованиями для бинарного дерева). При валидации приветствуется генерация
+ собственного исключения
+Поработайте с оптимизированной структурой,
+протестируйте на реальных данных - на клиентском коде
+"""
+
+
+class BinaryTreeError(Exception):
+    def __init__(self, text):
+        self.txt = text
+
+
+class BinaryTree:
+    def __init__(self, root_obj):
+        # корень
+        self.root = root_obj
+        # левый потомок
+        self.left_child = None
+        # правый потомок
+        self.right_child = None
+
+    # добавить левого потомка
+    def insert_left(self, new_node):
+        # если у узла нет левого потомка
+        try:
+            if self.left_child is None and self.root > new_node:
+                # тогда узел просто вставляется в дерево
+                # формируется новое поддерево
+                self.left_child = BinaryTree(new_node)
+            # если у узла есть левый потомок
+            elif self.left_child is not None and self.root > new_node:
+                # тогда вставляем новый узел
+                tree_obj = BinaryTree(new_node)
+                # и спускаем имеющегося потомка на один уровень ниже
+                tree_obj.left_child = self.left_child
+                self.left_child = tree_obj
+            else:
+                raise BinaryTreeError(f'Элемент "{new_node}" >= корня "{self.root}" - '
+                                      f'вставка влево невозможна!')
+        except BinaryTreeError as e:
+            print(e)
+
+    # добавить правого потомка
+    def insert_right(self, new_node):
+        # если у узла нет правого потомка
+        try:
+            if self.right_child is None and self.root <= new_node:
+                # тогда узел просто вставляется в дерево
+                # формируется новое поддерево
+                self.right_child = BinaryTree(new_node)
+            # если у узла есть правый потомок
+            elif self.right_child is not None and self.root <= new_node:
+                # тогда вставляем новый узел
+                tree_obj = BinaryTree(new_node)
+                # и спускаем имеющегося потомка на один уровень ниже
+                tree_obj.right_child = self.right_child
+                self.right_child = tree_obj
+            else:
+                raise BinaryTreeError(f'Элемент "{new_node}" < корня "{self.root}" - '
+                                      f'вставка вправо невозможна!')
+        except BinaryTreeError as err:
+            print(err)
+
+        # метод доступа к правому потомку
+
+    def get_right_child(self):
+        return self.right_child
+
+        # метод доступа к левому потомку
+
+    def get_left_child(self):
+        return self.left_child
+
+        # метод установки корня
+
+    def set_root_val(self, obj):
+        self.root = obj
+
+        # метод доступа к корню
+
+    def get_root_val(self):
+        return self.root
+
+
+r = BinaryTree(8)
+print(r.get_root_val())
+print(r.get_left_child())
+
+r.insert_left(4)
+r.insert_left(40)
+
+print(r.get_left_child())
+
+try:
+    print(f'left > {r.get_left_child().get_root_val()}')
+except AttributeError:
+    print("No child on the left!")
+
+r.insert_right(7)
+
+print(r.get_right_child())
+
+try:
+    print(f'right > {r.get_right_child().get_root_val()}')
+except AttributeError:
+    print("No child on the right!")
+
+r.insert_right(12)
+
+print(f'right > {r.get_right_child().get_root_val()}')
+
+r.get_right_child().set_root_val(21)
+print(r.get_right_child().get_root_val())
+
